@@ -55,13 +55,13 @@ $(function() {
   								//第七代
   								$.each(pdJson, function(k7,v7) {
   									if(v7.gsx$parent.$t == k6){
-  										pdChildren.push({'name': v7.gsx$姓名.$t, 'title': '', 'sort':v7.gsx$排行.$t, 'className': 'middle-level', 'children': []});
+  										pdChildren.push({'name': v7.gsx$姓名.$t, 'title': '', 'sort':v7.gsx$排行.$t, 'className': 'pipeline1', 'children': []});
   									}
   								});
   								//排序ASC
   								pdChildren = pdChildren.sort(function (a, b) { return a.sort > b.sort ? 1 : -1;});
   								//console.log(pdChildren.sort());
-  								pdPeer.push({'name': v6.gsx$姓名.$t, 'title': '', 'sort':v6.gsx$排行.$t, 'className': 'middle-level', 'children': pdChildren});
+  								pdPeer.push({'name': v6.gsx$姓名.$t, 'title': '', 'sort':v6.gsx$排行.$t, 'className': 'rd-dept', 'children': pdChildren});
   								//clear
   								pdChildren = [];
   							}
@@ -85,9 +85,9 @@ $(function() {
 		pdSource = {
 			'name': '陳佛',
       		'title': '',
-      		'children':[{ 'name': pdJson[0].gsx$姓名.$t, 'title': '', 'className': 'middle-level', 
+      		'children':[{ 'name': pdJson[0].gsx$姓名.$t, 'title': '', 'className': 'frontend1', 
       			'children': pdGrand },
-      		{ 'name': '陳春耕', 'title': '', 'className': 'middle-level', 'children': [] }]
+      		{ 'name': '陳春耕', 'title': '', 'className': 'frontend1', 'children': [{ 'name': '阿美姑', 'title': '', 'className': 'product-dept', 'children': [] }] }]
 		};
   		$('#chart-container').orgchart({
       		'data' : pdSource,
