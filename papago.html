@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="zh-TW"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="zh-TW"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="zh-TW"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html xmlns="https://www.w3.org/1999/xhtml" dir="ltr" lang="zh-Hant-TW"  prefix="og: http://ogp.me/ns#" class="no-js">
+<!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>趴趴GO!家族v7.0</title>  
+  <link rel="stylesheet" href="css/jquery.orgchart.css?v=20200504">
+  <link rel="stylesheet" href="css/style.css?v=20200504">
+  <style type="text/css">
+    .orgchart { background: #fff; }
+    .orgchart td.left, .orgchart td.right, .orgchart td.top { border-color: #aaa; }
+    .orgchart td>.down { background-color: #aaa; }
+    .orgchart .middle-level .title { background-color: #006699; }
+    .orgchart .middle-level .content { border-color: #006699; }
+    .orgchart .product-dept .title { background-color: #009933; }
+    .orgchart .product-dept .content { border-color: #009933; }
+    .orgchart .rd-dept .title { background-color: #993366; }
+    .orgchart .rd-dept .content { border-color: #993366; }
+    .orgchart .pipeline1 .title { background-color: #996633; }
+    .orgchart .pipeline1 .content { border-color: #996633; }
+    .orgchart .frontend1 .title { background-color: #cc0066; }
+    .orgchart .frontend1 .content { border-color: #cc0066; }
+    .orgchart .node .title {width:200px;}
+    #chart-container {height:360px;}
+  </style>
+</head>
+<body>
+<div id="chart-container"></div>
+
+<script type="text/javascript" src="js/jquery.min.js?v=20200504"></script>
+<script type="text/javascript" src="js/jquery.orgchart.js?v=20200504"></script>
+<script type="text/javascript">
+const Today=new Date();
+//document.write("今天日期是 " + Today.getFullYear()+ " 年 " + (Today.getMonth()+1) + " 月 " + Today.getDate() + " 日");
+let DateDiff = function (sDate1) {
+  let oDate1 = new Date(sDate1);
+  let iDays = parseInt(Math.abs(oDate1 - Today) / 1000 / 60 / 60 / 24 / 365); // 把相差的毫秒數轉換為年
+  return iDays;
+};
+//修改於 http://220.128.133.15/s1080412/4_digiClock/
+function countdown(){
+   let deadline=new Date(`01/01/${Today.getUTCFullYear()+1}`);
+   let nowtime=new Date();
+   let getdead=deadline.getTime();
+   let getnow=nowtime.getTime();
+   let diff=getdead-getnow;
+   let s=Math.floor((diff/1000)%60);
+   let m=Math.floor((diff/1000/60)%60);
+   let h=Math.floor((diff/1000/60/60)%24);
+   let d=Math.floor(diff/1000/60/60/24);
+     
+   $('.day').text(`${d} 天`);
+   $('.hour').text(`${h} 時`);
+   $('.min').text(`${m} 分`);
+   $('.sec').text(`${s} 秒`);
+}
+var run=setInterval(countdown,1000);
+$(function() {
+	let jsonurl = 'https://spreadsheets.google.com/feeds/list/1OSogQ8JCNKwmznymSsIBTapOtyeiCpeQNkMQQDjjEmk/od6/public/values?alt=json';
+	let pdJson, pdSource, pdGrand=[], pdParent=[], pdPeer=[], pdChildren=[];
+    $.get(jsonurl, function(data) {
+  		pdJson = data.feed.entry;
+  		$.each(pdJson, function(k4,v4) {
+  			//第四代
+    		if(v4.gsx$parent.$t == 0){
+    			//第五代
+  				$.each(pdJson, function(k5,v5) {
+  					if(v5.gsx$parent.$t == k4){
+  						//第六代
+  						$.each(pdJson, function(k6,v6) {
+  							if(v6.gsx$parent.$t == k5){
+  								//第七代
+  								$.each(pdJson, function(k7,v7) {
+  									if(v7.gsx$parent.$t == k6){
+  										pdChildren.push({'name': v7.gsx$姓名.$t, 'title': '', 'sort':v7.gsx$排行.$t, 'className': 'pipeline1', 'children': []});
+  									}
+  								});
+  								//排序ASC
+  								pdChildren = pdChildren.sort(function (a, b) { return a.sort > b.sort ? 1 : -1;});
+  								//console.log(pdChildren.sort());
+  								pdPeer.push({'name': v6.gsx$姓名.$t, 'title': '', 'sort':v6.gsx$排行.$t, 'className': 'rd-dept', 'children': pdChildren});
+  								//clear
+  								pdChildren = [];
+  							}
+  						});
+  						//排序ASC
+  						pdPeer = pdPeer.sort(function (a, b) { return a.sort > b.sort ? 1 : -1;});
+  						//console.log(pdPeer.sort());
+  						pdParent.push({'name': v5.gsx$姓名.$t, 'title': `${DateDiff(v5.gsx$生日.$t)} 歲`, 'sort':v5.gsx$排行.$t, 'className': 'middle-level', 'children': pdPeer});
+  						//clear
+    					pdPeer = [];
+	  				}
+  				});
+  				//排序ASC
+  				pdParent = pdParent.sort(function (a, b) { return a.sort > b.sort ? 1 : -1;});
+  				//console.log(pdParent.sort());
+    			pdGrand.push({'name': v4.gsx$姓名.$t, 'title': '', 'className': 'product-dept', 'children': pdParent});
+    		}
+    		//clear
+    		pdParent = [];
+  		});
+		pdSource = {
+		'name': pdJson[0].gsx$姓名.$t, 
+		'title': '離喝茫日子剩 <span class="day"></span><span class="hour"></span><span class="min"></span><span class="sec"></span>', 
+		'className': 'frontend1', 
+		'children': pdGrand 
+		};
+  		$('#chart-container').orgchart({
+      		'data' : pdSource,
+      		'nodeContent': 'title'
+    	});
+	});
+  });
+</script>
+</body>
+</html>
