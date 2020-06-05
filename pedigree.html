@@ -9,7 +9,7 @@
   <meta charset="utf-8">
   <title>陳波家族v7.0</title>  
   <link rel="stylesheet" href="css/jquery.orgchart.css?v=20200503">
-  <link rel="stylesheet" href="css/style.css?v=20200503">
+  <link rel="stylesheet" href="css/style.css?v=20200605">
   <style type="text/css">
     .orgchart { background: #fff; }
     .orgchart td.left, .orgchart td.right, .orgchart td.top { border-color: #aaa; }
@@ -24,6 +24,10 @@
     .orgchart .pipeline1 .content { border-color: #996633; }
     .orgchart .frontend1 .title { background-color: #cc0066; }
     .orgchart .frontend1 .content { border-color: #cc0066; }
+    .orgchart .frontend0 .title { background-color: #484891; }
+    .orgchart .frontend0 .content { border-color: #484891; }
+    .orgchart .head .title { background-color: #9F35FF; }
+    .orgchart .head .content { border-color: #9F35FF; height:35px;}
   </style>
 </head>
 <body>
@@ -34,7 +38,7 @@
 <script type="text/javascript">
 $(function() {
 	let jsonurl = 'https://spreadsheets.google.com/feeds/list/1vMI_OAIRDP-mGqM0GrcCUgea47C-HHm0o2N3QcgMWLg/od6/public/values?alt=json';
-	let pdJson, pdSource, pdGrand=[], pdParent=[], pdPeer=[], pdChildren=[];
+	let PD, pdJson, pdSource, pdGrand=[], pdParent=[], pdPeer=[], pdChildren=[];
     $.get(jsonurl, function(data) {
   		pdJson = data.feed.entry;
   		$.each(pdJson, function(k4,v4) {
@@ -77,14 +81,25 @@ $(function() {
     		pdParent = [];
   		});
 		pdSource = {
-			'name': '陳佛',
+			'name': '陳佛-李泉-古荣生',
       		'title': '',
+      		'className': 'frontend0',
       		'children':[{ 'name': pdJson[0].gsx$姓名.$t, 'title': '', 'className': 'frontend1', 
       			'children': pdGrand },
       		{ 'name': '陳春耕', 'title': '', 'className': 'frontend1', 'children': [{ 'name': '阿美姑', 'title': '', 'className': 'product-dept', 'children': [] }] }]
 		};
+		PD = {
+			'name': '陳文錦-謝探',
+      		'title': '福建省泉州府同安縣安仁里<br />市頭十六堡 市頭人氏',
+      		'className': 'head',
+      		'children':[
+      		{ 'name': '陳田', 'title': '', 'className': 'frontend0' },
+      		{ 'name': '陳開', 'title': '', 'className': 'frontend0' },
+      		pdSource,
+      		{ 'name': '陳煥', 'title': '', 'className': 'frontend0' }]
+		};
   		$('#chart-container').orgchart({
-      		'data' : pdSource,
+      		'data' : PD,
       		'nodeContent': 'title'
     	});
 	});
