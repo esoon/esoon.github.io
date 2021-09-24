@@ -37,29 +37,29 @@
 <script type="text/javascript" src="js/jquery.orgchart.js?v=20200503"></script>
 <script type="text/javascript">
 $(function() {
-	let jsonurl = 'https://spreadsheets.google.com/feeds/list/1vMI_OAIRDP-mGqM0GrcCUgea47C-HHm0o2N3QcgMWLg/od6/public/values?alt=json';
+	let jsonurl = 'https://script.google.com/macros/s/AKfycbyYS0QjFziloIOeGxZt_2MQrRI4qtPBdb3MLQJdLq9OPpSlskwInxhsqAazQVDpOF1C/exec';
 	let PD, pdJson, pdSource, pdGrand=[], pdParent=[], pdPeer=[], pdChildren=[];
     $.get(jsonurl, function(data) {
-  		pdJson = data.feed.entry;
+  		pdJson = data;
   		$.each(pdJson, function(k4,v4) {
   			//第四代
-    		if(v4.gsx$parent.$t == 0){
+    		if(v4.parent == 0){
     			//第五代
   				$.each(pdJson, function(k5,v5) {
-  					if(v5.gsx$parent.$t == k4){
+  					if(v5.parent == k4){
   						//第六代
   						$.each(pdJson, function(k6,v6) {
-  							if(v6.gsx$parent.$t == k5){
+  							if(v6.parent == k5){
   								//第七代
   								$.each(pdJson, function(k7,v7) {
-  									if(v7.gsx$parent.$t == k6){
-  										pdChildren.push({'name': v7.gsx$姓名.$t, 'title': '', 'sort':v7.gsx$排行.$t, 'className': 'pipeline1', 'children': []});
+  									if(v7.parent == k6){
+  										pdChildren.push({'name': v7.name, 'title': '', 'sort':v7.sort, 'className': 'pipeline1', 'children': []});
   									}
   								});
   								//排序ASC
   								pdChildren = pdChildren.sort(function (a, b) { return a.sort > b.sort ? 1 : -1;});
   								//console.log(pdChildren.sort());
-  								pdPeer.push({'name': v6.gsx$姓名.$t, 'title': '', 'sort':v6.gsx$排行.$t, 'className': 'rd-dept', 'children': pdChildren});
+  								pdPeer.push({'name': v6.name, 'title': '', 'sort':v6.sort, 'className': 'rd-dept', 'children': pdChildren});
   								//clear
   								pdChildren = [];
   							}
@@ -67,7 +67,7 @@ $(function() {
   						//排序ASC
   						pdPeer = pdPeer.sort(function (a, b) { return a.sort > b.sort ? 1 : -1;});
   						//console.log(pdPeer.sort());
-  						pdParent.push({'name': v5.gsx$姓名.$t, 'title': '', 'sort':v5.gsx$排行.$t, 'className': 'middle-level', 'children': pdPeer});
+  						pdParent.push({'name': v5.name, 'title': '', 'sort':v5.sort, 'className': 'middle-level', 'children': pdPeer});
   						//clear
     					pdPeer = [];
 	  				}
@@ -75,7 +75,9 @@ $(function() {
   				//排序ASC
   				pdParent = pdParent.sort(function (a, b) { return a.sort > b.sort ? 1 : -1;});
   				//console.log(pdParent.sort());
-    			pdGrand.push({'name': v4.gsx$姓名.$t, 'title': '', 'className': 'product-dept', 'children': pdParent});
+          if(v4.parent !== ''){
+    			   pdGrand.push({'name': v4.name, 'title': '', 'className': 'product-dept', 'children': pdParent});
+          }
     		}
     		//clear
     		pdParent = [];
@@ -84,7 +86,7 @@ $(function() {
 			'name': '陳佛-李泉-古荣生',
       		'title': '',
       		'className': 'frontend0',
-      		'children':[{ 'name': pdJson[0].gsx$姓名.$t, 'title': '', 'className': 'frontend1', 
+      		'children':[{ 'name': pdJson[0].name, 'title': '', 'className': 'frontend1', 
       			'children': pdGrand },
       		{ 'name': '陳春耕', 'title': '', 'className': 'frontend1', 'children': [{ 'name': '阿美姑', 'title': '', 'className': 'product-dept', 'children': [] }] }]
 		};
