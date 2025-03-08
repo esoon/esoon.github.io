@@ -22,6 +22,8 @@
     .orgchart .rd-dept .content { border-color: #993366; }
     .orgchart .pipeline1 .title { background-color: #996633; }
     .orgchart .pipeline1 .content { border-color: #996633; }
+    .orgchart .grandson .title { background-color: #53885D; }
+    .orgchart .grandson .content { border-color: #53885D; }
     .orgchart .frontend1 .title { background-color: #cc0066; }
     .orgchart .frontend1 .content { border-color: #cc0066; }
     .orgchart .frontend0 .title { background-color: #484891; }
@@ -38,7 +40,7 @@
 <script type="text/javascript">
 $(function() {
 	let jsonurl = 'https://script.google.com/macros/s/AKfycbyYS0QjFziloIOeGxZt_2MQrRI4qtPBdb3MLQJdLq9OPpSlskwInxhsqAazQVDpOF1C/exec';
-	let PD, pdJson, pdSource, pdGrand=[], pdParent=[], pdPeer=[], pdChildren=[];
+	let PD, pdJson, pdSource, pdGrand=[], pdParent=[], pdPeer=[], pdChildren=[], pdGrandson=[];
     $.get(jsonurl, function(data) {
   		pdJson = data;
   		$.each(pdJson, function(k4,v4) {
@@ -52,8 +54,19 @@ $(function() {
   							if(v6.parent == k5){
   								//第七代
   								$.each(pdJson, function(k7,v7) {
-  									if(v7.parent == k6){
-  										pdChildren.push({'name': v7.name, 'title': '', 'sort':v7.sort, 'className': 'pipeline1', 'children': []});
+  									if(v7.parent == k6){  										
+  										//第八代
+  										$.each(pdJson, function(k8,v8) {
+		  									if(v8.parent == k7){
+		  										pdGrandson.push({'name': v8.name, 'title': '', 'sort':v8.sort, 'className': 'grandson', 'children': []});
+		  									}
+		  								});
+		  								//排序ASC
+		  								pdGrandson = pdGrandson.sort(function (a, b) { return a.sort > b.sort ? 1 : -1;});
+		  								console.log(pdGrandson.sort());
+		  								pdChildren.push({'name': v7.name, 'title': '', 'sort':v7.sort, 'className': 'pipeline1', 'children': pdGrandson});
+		  								//clear
+		  								pdGrandson = [];
   									}
   								});
   								//排序ASC
